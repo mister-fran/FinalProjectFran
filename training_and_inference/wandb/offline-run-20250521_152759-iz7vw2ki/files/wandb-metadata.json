@@ -1,0 +1,45 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.9",
+    "heartbeatAt": "2025-05-21T13:27:59.538448",
+    "startedAt": "2025-05-21T13:27:59.391699",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\beego\\Desktop\\Visualcode\\APPML\\FinalProject\\icecubetransformer\\training_and_inference\\train.py",
+    "codePathLocal": "train.py",
+    "codePath": "training_and_inference\\train.py",
+    "git": {
+        "remote": "https://github.com/lucvoorend/icecubetransformer",
+        "commit": "e8c141e8013ad558701d363f6510cb75538c5bce"
+    },
+    "email": null,
+    "root": "C:/Users/beego/Desktop/Visualcode/APPML/FinalProject/icecubetransformer",
+    "host": "LAPTOP-663NF35R",
+    "username": "beego",
+    "executable": "C:\\Users\\beego\\anaconda3\\envs\\FinalProject\\python.exe",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 2492.0,
+        "min": 0.0,
+        "max": 2592.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2492.0,
+            "min": 0.0,
+            "max": 2592.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 463.94992446899414,
+            "used": 285.106746673584
+        }
+    },
+    "memory": {
+        "total": 7.859287261962891
+    }
+}
