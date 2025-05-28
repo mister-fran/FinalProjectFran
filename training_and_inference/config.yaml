@@ -6,13 +6,13 @@ checkpoint_path: # "/groups/icecube/luc/Workspace/GraphNet/work/IceCube_transfor
 
 # Input Data Parameters
 input_data:
-  root_dir: "C:/Users/beego/Desktop/Visualcode/APPML/FinalProject/icecubetransformer/IceCube_data_final_project" # Path to the root directory of processed input data (e.g., PMT-fied data)
+  root_dir: "/content/IceCube_data_final_project" # Path to the root directory of processed input data (e.g., PMT-fied data)
   multi_dataset: false                   # Whether to combine multiple datasets
   dataset_ids: [22011]                    # List of dataset IDs to use (e.g., [22011, 22012]), only allows one dataset if multi_dataset is false     
   training_parts: [[1]]             # List of list of training parts to use (e.g., [1, 2, 3]) matching the dataset_ids
   validation_parts: [[4]]                 # List of list of validation parts to use (e.g., [4]) matching the dataset_ids
   reconstruction_target: "dir3vec"        # Target variable for reconstruction ('dir3vec', 'azimuth_zenith', etc.)
-  seq_dim: 128                            # Maximum sequence length of the input data
+  seq_dim: 16                            # Maximum sequence length of the input data
   num_workers: 1                          # Number of worker processes for data loading
   # Add other data-related parameters if needed (e.g., specific file names, pre-processing flags)
 
