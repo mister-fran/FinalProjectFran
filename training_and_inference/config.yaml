@@ -19,9 +19,9 @@ input_data:
 # Model Parameters
 model_params:
   feature_dim: 32                        # Dimension of the input features (e.g., PMT-fied data)
-  embedding_dim: 128                      # Dimension of the input embeddings
+  embedding_dim: 16                      # Dimension of the input embeddings
   output_dim: 3                           # Dimension of the final output (e.g., 3 for direction vector, 2 for azimuth/zenith)
-  n_layers: 4                             # Number of transformer encoder layers
+  n_layers: 2                             # Number of transformer encoder layers
   n_heads: 2                              # Number of attention heads in multi-head attention
   dropout: 0.1                            # Dropout rate used in the model
   # Add other model-specific hyperparameters (e.g., activation function, normalization type)
@@ -30,7 +30,7 @@ model_params:
 training_params:
   device: "cpu"                        # Device to train on ('cuda:0', 'cuda:1', 'cpu')
   batch_size: 32                          # Number of samples per batch
-  n_epochs: 1                           # Maximum number of training epochs
+  n_epochs: 2                            # Maximum number of training epochs
   patience: 1                            # Number of epochs to wait for improvement before early stopping (-1 to disable)
   loss_function: dir_3vec_loss            # Loss function to use 
   learning_rate: 0.0005                   # Constant learning rate (base lr, might be overridden by scheduler)
