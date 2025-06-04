@@ -182,6 +182,110 @@ def VonMisesFisherLoss3D(y_pred, target):
 
     return torch.mean(losses)
 
+def VonMisesFisherLoss3D_azimuth_zenith(y_pred, target):
+    """
+    Von Mises Fisher loss function for 3D vectors
+
+    Args:
+    - y_pred (torch.Tensor): predicted 4D vector (x,y,z, kappa) [batch_size, 4]
+    - target (torch.Tensor): target 3D vector (normalized) [batch_size, 3]
+
+    Returns:
+    - mean loss for the batch (torch.Tensor)
+
+    Take in azimuth and zenith angles as inout, transform them to 3D vectors
+    and compute the loss using the von Mises Fisher distribution.
+    """
+
+    #Separate y_pred into azimuth, zenith and kappa
+    
+    #Turn these into 3D vectors
+    azimuth = y_pred[:, 0] 
+    zenith = y_pred[:, 1]
+    # Convert azimuth and zenith angles to 3D vectors
+    x_pred = torch.sin(zenith) * torch.cos(azimuth)
+    y_pred = torch.sin(zenith) * torch.sin(azimuth)
+    z_pred = torch.cos(zenith)
+    y_pred = torch.stack((x_pred, y_pred, z_pred), dim=-1)
+    kappa = y_pred[:, 2]
+
+    def log_cmk_exact(kappa, d=3):
+        """
+        Logarithm of the normalization constant of the von Mises Fisher distribution
+        https://en.wikipedia.org/wiki/Von_Mises%E2%80%93Fisher_distribution
+
+        WARNING: This function is not numerically stable for large values of kappa
+
+        Args:
+        - kappa (torch.Tensor): concentration parameter
+        - d (int): dimension of the space (default=3)
+
+        Returns:
+        - log_cmk (torch.Tensor): logarithm of the normalization
+        """
+        return LogCMK.apply(kappa, d)
+    
+    def log_cmk_approx(kappa, d=3):
+        """
+        Logarithm of the normalization constant of the von Mises Fisher distribution
+        https://en.wikipedia.org/wiki/Von_Mises%E2%80%93Fisher_distribution
+
+        WARNING: This function is an approximation of cmk for large values of kappa
+                 and gives wrong results for kappa < 100
+
+        Args:
+        - kappa (torch.Tensor): concentration parameter
+        - d (int): dimension of the space (default=3)
+
+        Returns:
+        - log_cmk (torch.Tensor): logarithm of the normalization
+        """
+        v = d/2 - 0.5
+        a = torch.sqrt((v+1)**2 + kappa**2)
+        b = v - 1
+        log_cmk_approx = -a + b * torch.log(b + a)
+        return log_cmk_approx
+    
+    def log_cmk(kappa, d=3, switch=100):
+        """
+        Logarithm of the normalization constant of the von Mises Fisher distribution
+        https://en.wikipedia.org/wiki/Von_Mises%E2%80%
+        
+        Automatically switches between exact and approximate calculation based on the
+        value of kappa. The switch value is set to 100 by default.
+
+        Args:
+        - kappa (torch.Tensor): concentration parameter
+        - d (int): dimension of the space (default=3)
+        - switch (int): switch value between exact and approximate calculation (default=100)
+
+        Returns:
+        - log_cmk (torch.Tensor): logarithm of the normalization
+        """
+        switch = torch.tensor([switch]).to(kappa.device)
+        mask_exact = kappa < switch
+        
+        # Calculate the offset between the exact and approximate calculation to ensure continuity
+        offset = log_cmk_approx(switch, d) - log_cmk_exact(switch, d)
+
+        log_cmk = log_cmk_approx(kappa, d)
+        log_cmk[mask_exact] = log_cmk_exact(kappa[mask_exact], d)
+
+        return log_cmk - offset
+
+    # make sure kappa is positive
+    kappa = torch.abs(kappa) + 1e-6
+
+    p = kappa.unsqueeze(1) * y_pred[:, :3]
+    norm_p = torch.norm(p, dim=1)
+
+    dot_product = torch.sum(p * target, dim=1)
+
+    log_cmk_val = log_cmk(norm_p)
+    losses = -log_cmk_val - dot_product
+
+    return torch.mean(losses)
+
 def opening_angle_loss(y_pred, target):
     """
     Opening angle loss function:
