@@ -1,0 +1,44 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.9",
+    "heartbeatAt": "2025-06-04T14:34:54.224070",
+    "startedAt": "2025-06-04T14:34:54.074628",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "<python with no main file>",
+    "codePathLocal": null,
+    "git": {
+        "remote": "https://github.com/mister-fran/FinalProjectFran.git",
+        "commit": "7de72788a2587520dc7244999b6e8c5f79c4b5f4"
+    },
+    "email": "franek.nawrocki@gmail.com",
+    "root": "C:/Users/beego/Desktop/Visualcode/APPML/FinalProject/FinalProjectFran/FinalProjectFran",
+    "host": "LAPTOP-663NF35R",
+    "username": "beego",
+    "executable": "C:\\Users\\beego\\anaconda3\\envs\\FinalProject\\python.exe",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 2492.0,
+        "min": 0.0,
+        "max": 2592.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2492.0,
+            "min": 0.0,
+            "max": 2592.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 463.94992446899414,
+            "used": 301.4025993347168
+        }
+    },
+    "memory": {
+        "total": 7.859287261962891
+    }
+}

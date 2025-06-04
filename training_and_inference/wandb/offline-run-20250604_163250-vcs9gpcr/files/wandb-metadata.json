@@ -1,0 +1,45 @@
+{
+    "os": "Windows-10-10.0.19045-SP0",
+    "python": "3.12.9",
+    "heartbeatAt": "2025-06-04T14:32:50.825377",
+    "startedAt": "2025-06-04T14:32:50.492328",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "C:\\Users\\beego\\Desktop\\Visualcode\\APPML\\FinalProject\\FinalProjectFran\\FinalProjectFran\\training_and_inference\\train.py",
+    "codePathLocal": "train.py",
+    "codePath": "training_and_inference\\train.py",
+    "git": {
+        "remote": "https://github.com/mister-fran/FinalProjectFran.git",
+        "commit": "7de72788a2587520dc7244999b6e8c5f79c4b5f4"
+    },
+    "email": "franek.nawrocki@gmail.com",
+    "root": "C:/Users/beego/Desktop/Visualcode/APPML/FinalProject/FinalProjectFran/FinalProjectFran",
+    "host": "LAPTOP-663NF35R",
+    "username": "beego",
+    "executable": "C:\\Users\\beego\\anaconda3\\envs\\FinalProject\\python.exe",
+    "cpu_count": 2,
+    "cpu_count_logical": 4,
+    "cpu_freq": {
+        "current": 1495.0,
+        "min": 0.0,
+        "max": 2592.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 1495.0,
+            "min": 0.0,
+            "max": 2592.0
+        }
+    ],
+    "disk": {
+        "/": {
+            "total": 463.94992446899414,
+            "used": 301.40261459350586
+        }
+    },
+    "memory": {
+        "total": 7.859287261962891
+    }
+}
