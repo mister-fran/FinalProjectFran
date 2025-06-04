@@ -5,7 +5,7 @@ import yaml
 
 import numpy as np
 
-from src.loss import dir_3vec_loss, MSE_loss, VonMisesFisherLoss3D, opening_angle_loss, Simon_loss
+from src.loss import VonMisesFisherLoss3D_azimuth_zenith, dir_3vec_loss, MSE_loss, VonMisesFisherLoss3D, opening_angle_loss, Simon_loss
 
 with open('config.yaml', 'r') as f:
     config = yaml.safe_load(f)
