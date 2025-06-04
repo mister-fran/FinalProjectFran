@@ -21,6 +21,8 @@ elif config['training_params']['loss_function'] == 'opening_angle_loss':
     loss_func = opening_angle_loss
 elif config['training_params']['loss_function'] == 'Simon_loss':
     loss_func = Simon_loss
+elif config['training_params']['loss_function'] == 'VonMisesFisherLoss3D_azimuth_zenith':
+    loss_func = VonMisesFisherLoss3D_azimuth_zenith
 
 class AttentionHead(nn.Module):
     """ 
