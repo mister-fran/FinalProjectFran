@@ -122,6 +122,8 @@ class PMTfiedDatasetPyArrow(Dataset):
         # Stack to dir3vec tensor
         dir3vec = torch.stack([x_dir, y_dir, z_dir], dim=-1)
 
+        azimuth_zenith = torch.stack([azimuth, zenith], dim=-1)
+
         x_dir_lepton = torch.tensor(truth.column('dir_x_GNHighestEDaughter')[local_idx].as_py(), dtype=torch.float32)
         y_dir_lepton = torch.tensor(truth.column('dir_y_GNHighestEDaughter')[local_idx].as_py(), dtype=torch.float32)
         z_dir_lepton = torch.tensor(truth.column('dir_z_GNHighestEDaughter')[local_idx].as_py(), dtype=torch.float32)
@@ -161,7 +163,7 @@ class PMTfiedDatasetPyArrow(Dataset):
             value_tensor = torch.from_numpy(value)
             x_tensor[:, i] = value_tensor
 
-        return Data(x=x_tensor, n_doms=n_doms, event_no=event_no, feature_path=feature_path, energy=energy, azimuth_neutrino=azimuth, zenith_neutrino=zenith, dir3vec=dir3vec, dir3vec_lepton=dir3vec_lepton, pid=pid)
+        return Data(x=x_tensor, n_doms=n_doms, event_no=event_no, feature_path=feature_path, energy=energy, azimuth_neutrino=azimuth, zenith_neutrino=zenith, dir3vec=dir3vec, dir3vec_lepton=dir3vec_lepton, pid=pid,azimuth_zenith=azimuth_zenith)
     
 
 class PMTfiedDatasetPyArrowMulti(Dataset):

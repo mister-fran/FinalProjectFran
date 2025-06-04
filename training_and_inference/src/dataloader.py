@@ -62,7 +62,7 @@ def custom_collate_fn(batch, max_seq_length=config['input_data']['seq_dim']):
     padded_events, event_lengths = zip(*[pad_or_truncate(event, max_seq_length) for event in events])
 
     batch_events = torch.stack(padded_events)
-    event_lengths = torch.tensor(event_lengths)
+    event_lengths = torch.tensor(event_lengths) 
 
     # Extract labels and convert to tensors
     label_name = reconstruction_target
@@ -141,6 +141,14 @@ def custom_collate_fn_pulse(batch, max_seq_length=config['input_data']['seq_dim'
 
         # Stack to dir3vec tensor
         labels = torch.stack([x_dir, y_dir, z_dir], dim=-1)
+
+    elif reconstruction_target == 'azimuth_zenith':
+        # Extract azimuth and zenith angles
+        azimuth = torch.tensor([item['azimuth'] for item in batch])
+        zenith = torch.tensor([item['zenith'] for item in batch])
+
+        # Stack to azimuth_zenith tensor
+        labels = torch.stack([azimuth, zenith], dim=-1)
 
     else:
         # Extract labels and convert to tensors
