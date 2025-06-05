@@ -208,6 +208,12 @@ def VonMisesFisherLoss3D_azimuth_zenith(y_pred, target):
     pred_z = torch.cos(zenith)
     y_pred = torch.stack((pred_x, pred_y, pred_z), dim=-1)
     
+    #Likewise convert target to 3D vectors
+    target_x = torch.sin(target[:, 1]) * torch.cos(target[:, 0])
+    target_y = torch.sin(target[:, 1]) * torch.sin(target[:, 0])
+    target_z = torch.cos(target[:, 1])
+    target = torch.stack((target_x, target_y, target_z), dim=-1)
+    
 
     def log_cmk_exact(kappa, d=3):
         """
