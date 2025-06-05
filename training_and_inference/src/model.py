@@ -335,18 +335,18 @@ class LitModel(pl.LightningModule):
             print("y_pred: ", y_pred[:5])
             print("target: ", target[:5])
 
-            pred_x = y_pred[:5, 0].detach().cpu().to(torch.float32).numpy()
-            pred_y = y_pred[:5, 1].detach().cpu().to(torch.float32).numpy()
-            pred_z = y_pred[:5, 2].detach().cpu().to(torch.float32).numpy()
+            #pred_x = y_pred[:5, 0].detach().cpu().to(torch.float32).numpy()
+            #pred_y = y_pred[:5, 1].detach().cpu().to(torch.float32).numpy()
+            #pred_z = y_pred[:5, 2].detach().cpu().to(torch.float32).numpy()
 
-            target_x = target[:5, 0].detach().cpu().to(torch.float32).numpy()
-            target_y = target[:5, 1].detach().cpu().to(torch.float32).numpy()
-            target_z = target[:5, 2].detach().cpu().to(torch.float32).numpy()
+            #target_x = target[:5, 0].detach().cpu().to(torch.float32).numpy()
+            #target_y = target[:5, 1].detach().cpu().to(torch.float32).numpy()
+            #target_z = target[:5, 2].detach().cpu().to(torch.float32).numpy()
 
-            opening_angle = np.arccos((pred_x * target_x + pred_y * target_y + pred_z * target_z) / (np.sqrt(pred_x**2 + pred_y**2 + pred_z**2) * np.sqrt(target_x**2 + target_y**2 + target_z**2))) * 180 / np.pi
-            print("Opening angle (deg): ", opening_angle)
+            #opening_angle = np.arccos((pred_x * target_x + pred_y * target_y + pred_z * target_z) / (np.sqrt(pred_x**2 + pred_y**2 + pred_z**2) * np.sqrt(target_x**2 + target_y**2 + target_z**2))) * 180 / np.pi
+            #print("Opening angle (deg): ", opening_angle)
 
-            self.train_opening_angles.append(opening_angle)
+            #self.train_opening_angles.append(opening_angle)
 
         
         self.log('train_loss', loss, prog_bar=True, on_step=True, logger=True, sync_dist=True)
@@ -378,20 +378,20 @@ class LitModel(pl.LightningModule):
             print("y_pred: ", y_pred[:5])
             print("target: ", target[:5])
 
-        if batch_idx % 10 == 0:
+        #if batch_idx % 10 == 0:
 
-            pred_x = y_pred[:5, 0].detach().cpu().to(torch.float32).numpy()
-            pred_y = y_pred[:5, 1].detach().cpu().to(torch.float32).numpy()
-            pred_z = y_pred[:5, 2].detach().cpu().to(torch.float32).numpy()
+            #pred_x = y_pred[:5, 0].detach().cpu().to(torch.float32).numpy()
+            #pred_y = y_pred[:5, 1].detach().cpu().to(torch.float32).numpy()
+            #pred_z = y_pred[:5, 2].detach().cpu().to(torch.float32).numpy()
 
-            target_x = target[:5, 0].detach().cpu().to(torch.float32).numpy()
-            target_y = target[:5, 1].detach().cpu().to(torch.float32).numpy()
-            target_z = target[:5, 2].detach().cpu().to(torch.float32).numpy()
+            #target_x = target[:5, 0].detach().cpu().to(torch.float32).numpy()
+            #target_y = target[:5, 1].detach().cpu().to(torch.float32).numpy()
+            #target_z = target[:5, 2].detach().cpu().to(torch.float32).numpy()
 
-            opening_angle = np.arccos((pred_x * target_x + pred_y * target_y + pred_z * target_z) / (np.sqrt(pred_x**2 + pred_y**2 + pred_z**2) * np.sqrt(target_x**2 + target_y**2 + target_z**2))) * 180 / np.pi
-            print("Opening angle (deg): ", opening_angle)
+            #opening_angle = np.arccos((pred_x * target_x + pred_y * target_y + pred_z * target_z) / (np.sqrt(pred_x**2 + pred_y**2 + pred_z**2) * np.sqrt(target_x**2 + target_y**2 + target_z**2))) * 180 / np.pi
+            #print("Opening angle (deg): ", opening_angle)
 
-            self.val_opening_angles.append(opening_angle)
+            #self.val_opening_angles.append(opening_angle)
 
         self.log('val_loss', loss, prog_bar=True, on_epoch=True, logger=True, sync_dist=True)
 
