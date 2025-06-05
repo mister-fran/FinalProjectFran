@@ -198,16 +198,16 @@ def VonMisesFisherLoss3D_azimuth_zenith(y_pred, target):
     """
 
     #Separate y_pred into azimuth, zenith and kappa
-    
+    kappa = y_pred[:, 2]
     #Turn these into 3D vectors
     azimuth = y_pred[:, 0] 
     zenith = y_pred[:, 1]
     # Convert azimuth and zenith angles to 3D vectors
-    x_pred = torch.sin(zenith) * torch.cos(azimuth)
-    y_pred = torch.sin(zenith) * torch.sin(azimuth)
-    z_pred = torch.cos(zenith)
-    y_pred = torch.stack((x_pred, y_pred, z_pred), dim=-1)
-    kappa = y_pred[:, 2]
+    pred_x = torch.sin(zenith) * torch.cos(azimuth)
+    pred_y = torch.sin(zenith) * torch.sin(azimuth)
+    pred_z = torch.cos(zenith)
+    y_pred = torch.stack((pred_x, pred_y, pred_z), dim=-1)
+    
 
     def log_cmk_exact(kappa, d=3):
         """
