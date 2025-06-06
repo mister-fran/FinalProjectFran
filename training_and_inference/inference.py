@@ -104,24 +104,26 @@ for i in range(len(predictions)):
     # Append (batch_size, 1) to the list
     pred_x.append(y_pred[:, 0])
     pred_y.append(y_pred[:, 1])
-    pred_z.append(y_pred[:, 2])
+    #pred_z.append(y_pred[:, 2])
 
     target_x.append(target[:, 0])
     target_y.append(target[:, 1])
-    target_z.append(target[:, 2])
+    #target_z.append(target[:, 2])
 
 # Concatenate the list of tensors to a single tensor
 pred_x = torch.cat(pred_x, dim=0)
 pred_y = torch.cat(pred_y, dim=0)
-pred_z = torch.cat(pred_z, dim=0)
+#pred_z = torch.cat(pred_z, dim=0)
 
 target_x = torch.cat(target_x, dim=0)
 target_y = torch.cat(target_y, dim=0)
-target_z = torch.cat(target_z, dim=0)
+#target_z = torch.cat(target_z, dim=0)
 
 print('Pred_x shape:', pred_x.shape)
 
-df = pd.DataFrame({"event_no": event_no, "x_pred": pred_x, "y_pred": pred_y, "z_pred": pred_z, "x_truth": target_x, "y_truth": target_y, "z_truth": target_z})
+#df = pd.DataFrame({"event_no": event_no, "x_pred": pred_x, "y_pred": pred_y, "z_pred": pred_z, "x_truth": target_x, "y_truth": target_y, "z_truth": target_z})
+df = pd.DataFrame({"event_no": event_no, "x_pred": pred_x, "y_pred": pred_y, "x_truth": target_x, "y_truth": target_y})
+
 
 destination = config['inference_params']['inference_output_path'] + config['run_name'] + '_' +  str(config['inference_params']['inference_dataset_id']) + '_' + str(config['inference_params']['inference_parts'])+ '_prediction.csv'
 df.to_csv(destination, index=False)
