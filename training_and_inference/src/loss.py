@@ -208,6 +208,9 @@ def VonMisesFisherLoss3D_azimuth_zenith(y_pred, target):
     pred_z = torch.cos(zenith)
     y_pred = torch.stack((pred_x, pred_y, pred_z), dim=-1)
     
+    if (y_pred < 0).any():
+        return torch.tensor(1e6, device=y_pred.device, dtype=y_pred.dtype)
+    
     #Likewise convert target to 3D vectors
     target_x = torch.sin(target[:, 1]) * torch.cos(target[:, 0])
     target_y = torch.sin(target[:, 1]) * torch.sin(target[:, 0])
