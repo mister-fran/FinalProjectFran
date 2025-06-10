@@ -2,6 +2,8 @@ import torch
 import torch.nn as nn
 import pytorch_lightning as pl
 import yaml
+import pickle
+import os
 
 import numpy as np
 
@@ -41,7 +43,7 @@ class AttentionHead(nn.Module):
         self.value = nn.Linear(head_dim, head_dim)
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, q, k, v, event_lengths=None):
+    def forward(self, q, k, v, event_lengths=None, return_attention=False):
         batch_size, seq_dim, head_dim = q.shape
         
 
@@ -73,6 +75,8 @@ class AttentionHead(nn.Module):
         output = torch.matmul(attention_weights, v) # compute output by taking the dot product of attention weights and value
         # output shape: (batch_size, seq_dim, head_dim)
 
+        if return_attention:
+            return output, attention_weights
         return output
 
 
@@ -104,7 +108,7 @@ class MultiAttentionHead(nn.Module):
         self.summarize = nn.Linear(embedding_dim, embedding_dim)
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, x, event_lengths=None):
+    def forward(self, x, event_lengths=None, return_attention=False):
         batch_size, seq_dim, _ = x.shape
 
         # Project input to queries, keys, and values
@@ -118,13 +122,28 @@ class MultiAttentionHead(nn.Module):
         v = v.view(batch_size, seq_dim, self.nheads, self.head_dim).permute(0, 2, 1, 3)  # (batch_size, n_heads, seq_len, head_dim)
 
         # Store single-head outputs in a list by looping over single-head attention layers
-        head_outputs = [head(q[:, i], k[:, i], v[:, i], event_lengths=event_lengths) for i, head in enumerate(self.heads)]
+        #head_outputs = [head(q[:, i], k[:, i], v[:, i], event_lengths=event_lengths) for i, head in enumerate(self.heads)]
+        if return_attention:
+            head_outputs, attn_weights = zip(*[
+                head(q[:, i], k[:, i], v[:, i], event_lengths=event_lengths, return_attention=True)
+                for i, head in enumerate(self.heads)
+            ])
+            multihead_output = torch.cat(head_outputs, dim=-1)
+            output = self.summarize(multihead_output)
+            output = self.dropout(multihead_output)
+            return output, attn_weights
 
-        multihead_output = torch.cat(head_outputs, dim=-1) # concatenate the outputs of each head to get a single tensor
-        output = self.summarize(multihead_output) # apply a linear layer to summarize the multi-head output to the original embedding dimension
-        output = self.dropout(multihead_output) # apply dropout to the output
+        # multihead_output = torch.cat(head_outputs, dim=-1) # concatenate the outputs of each head to get a single tensor
+        # output = self.summarize(multihead_output) # apply a linear layer to summarize the multi-head output to the original embedding dimension
+        # output = self.dropout(multihead_output) # apply dropout to the output
 
-        return output
+        # return output
+        else:
+            head_outputs = [head(q[:, i], k[:, i], v[:, i], event_lengths=event_lengths) for i, head in enumerate(self.heads)]
+            multihead_output = torch.cat(head_outputs, dim=-1)
+            output = self.summarize(multihead_output)
+            output = self.dropout(multihead_output)
+            return output
 
 class FeedForward(nn.Module):
     """
@@ -249,7 +268,7 @@ class regression_Transformer(nn.Module):
         self.max_pooling = MaxPooling() # max pooling layer to get a single embedding from the sequence
         self.linear_regression = Linear_regression(embedding_dim, output_dim) # linear regression layer to predict the target
 
-    def forward(self, x, target=None, event_lengths=None):
+    def forward(self, x, target=None, event_lengths=None, return_attention=False):
         seq_dim_x = x.shape[1]
         device = x.device
 
@@ -262,8 +281,17 @@ class regression_Transformer(nn.Module):
 
         #print("Final emb shape: ", x.shape)
 
+        # for layer in self.layers:
+        #     x = layer(x, event_lengths=event_lengths)
+        attention_weights_all = []
         for layer in self.layers:
-            x = layer(x, event_lengths=event_lengths)
+            if return_attention:
+                x, attn_weights = layer.multihead(x, event_lengths=event_lengths, return_attention=True)
+                attention_weights_all.append(attn_weights)
+                x = layer.norm1(x + x)
+                x = layer.norm2(x + layer.feedforward(x))
+            else:
+                x = layer(x, event_lengths=event_lengths)
 
         # Feed the output of the transformer to the pooling layer
         batch_dim, seq_dim_x, emb_dim = x.shape[0], x.shape[1], x.shape[2]
@@ -287,14 +315,29 @@ class regression_Transformer(nn.Module):
 
         if target is None:
             loss = None
-            return y_pred, loss
-        
+            # return y_pred, loss
+            if return_attention:
+                return y_pred, loss, attention_weights_all
+            else:
+                return y_pred, loss
         else:
             loss = loss_func(y_pred, target)
-            return y_pred, loss
-
+            # return y_pred, loss
+            if return_attention:
+                return y_pred, loss, attention_weights_all
+            else:
+                return y_pred, loss
 #==================================================================================================
 # Define the PyTorch Lightning model      
+
+def to_numpy_recursive(obj):
+    if isinstance(obj, torch.Tensor):
+        return obj.cpu().detach().numpy()
+    elif isinstance(obj, (list, tuple)):
+        return [to_numpy_recursive(x) for x in obj]
+    else:
+        return obj
+    
 class LitModel(pl.LightningModule):
     def __init__(
             self, 
@@ -323,7 +366,17 @@ class LitModel(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         x, target, event_lengths = batch[0], batch[1], batch[2]
-        y_pred, loss = self.model(x, target=target, event_lengths=event_lengths)
+        #y_pred, loss = self.model(x, target=target, event_lengths=event_lengths)
+        if batch_idx % 100 == 0:
+            y_pred, loss, attention_weights = self.model(x, target=target, event_lengths=event_lengths, return_attention=True)
+            # Save attention weights to file
+            save_dir = "attention_weights"
+            os.makedirs(save_dir, exist_ok=True)
+            save_path = os.path.join(save_dir, f"attention_weights_batch_{batch_idx}.pkl")
+            with open(save_path, "wb") as f:
+                pickle.dump(to_numpy_recursive(attention_weights), f)
+        else:
+            y_pred, loss = self.model(x, target=target, event_lengths=event_lengths)
         #mean_loss = torch.mean(loss)
         self.train_losses.append(loss.item())
 
